@@ -1,0 +1,30 @@
+.dateContainer {
+	border: 1px black solid;
+	border-radius: 8px;
+	margin-top: 20px;
+}
+
+.date {
+	background-color: #63C29C;
+	color: #F7F8F8;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+	font-size: 16px;
+	padding-top: 3px;
+	padding-left: 10px;
+}
+
+.task {
+	background-color: gray;
+	margin: 5px;
+}
+
+.taskTitle:before {
+	content:"* ";
+}
+
+.notes {
+	padding-left: 20px;
+	background-color: white;
+	font-style: italic;
+}

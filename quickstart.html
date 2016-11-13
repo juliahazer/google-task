@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    
+    <script type="text/javascript">
+      // Your Client ID can be retrieved from your project in the Google
+      // Developer Console, https://console.developers.google.com
+      var CLIENT_ID = '27921294488-ercdbfp9gqf2g6q4jk5g2im2np146r8j.apps.googleusercontent.com';
+
+      var SCOPES = ['https://www.googleapis.com/auth/tasks.readonly'];
+
+      /**
+       * Check if current user has authorized this application.
+       */
+      function checkAuth() {
+        gapi.auth.authorize(
+          {
+            'client_id': CLIENT_ID,
+            'scope': SCOPES.join(' '),
+            'immediate': true
+          }, handleAuthResult);
+      }
+
+      /**
+       * Handle response from authorization server.
+       *
+       * @param {Object} authResult Authorization result.
+       */
+      function handleAuthResult(authResult) {
+        var authorizeDiv = document.getElementById('authorize-div');
+        if (authResult && !authResult.error) {
+          // Hide auth UI, then load client library.
+          authorizeDiv.style.display = 'none';
+          loadTasksApi();
+        } else {
+          // Show auth UI, allowing the user to initiate authorization by
+          // clicking authorize button.
+          authorizeDiv.style.display = 'inline';
+        }
+      }
+
+      /**
+       * Initiate auth flow in response to user clicking authorize button.
+       *
+       * @param {Event} event Button click event.
+       */
+      function handleAuthClick(event) {
+        gapi.auth.authorize(
+          {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
+          handleAuthResult);
+        return false;
+      }
+
+      var taskLists = {};
+      var tasks = {};
+
+      /**
+       * Load Google Tasks API client library.
+       */
+      function loadTasksApi() {
+        gapi.client.load('tasks', 'v1', listTaskLists);
+      }
+
+      /**
+       * Print task lists.
+       */
+      function listTaskLists() {
+        var request = gapi.client.tasks.tasklists.list({
+            'maxResults': 10
+          });
+
+          request.execute(function(resp) {
+            appendPre('Task Lists:');
+            taskLists = resp.items;
+            if (taskLists && taskLists.length > 0) {
+              for (var i = 0; i < taskLists.length; i++) {
+             
+                var taskList = taskLists[i];
+                appendPre(taskList.title + ' (' + taskList.id + ')');
+              }
+            } else {
+              appendPre('No task lists found.');
+            };
+  
+             getTasksByListId();
+          });
+      }
+
+      /*!!!!!!!NEED TO FIND A WAY TO HANDLE TASKS W/O A DATE!!!!*/
+      /*PRINT BY WEEK BY ETC*/
+
+
+      /*JULIA'S LIST!! NEED TO FIND A WAY TO NOT HARD CODE */
+      var tasklistid = 'MTYxMjQ4MzEwMzA0OTIwNzY1Nzk6MDow';
+      //MTYxMjQ4MzEwMzA0OTIwNzY1Nzk6MTow -- J&P
+      //MTYxMjQ4MzEwMzA0OTIwNzY1Nzk6MDow -- Julia's
+      //MTYxMjQ4MzEwMzA0OTIwNzY1Nzk6MjQ0MTczNDE5OjA -- My Tasks
+      var task;
+      var date;
+      var html ="";
+      
+      function getTasksByListId() {
+
+          var tasksDiv = document.getElementById('tasks');
+          var request = gapi.client.tasks.tasks.list({
+              'tasklist': tasklistid
+          })
+          request.execute(function(resp){
+            tasks = resp.items;
+            
+            console.log(tasks[0]);
+
+            if ((tasks.length == 1) && (tasks[0].title == "")){
+              tasksDiv.innerHTML = "<div class='noTasks'>No tasks exist in the " + taskLists[1].title + "list.</div>";
+            }
+            else {
+                for (var i = 0; i < tasks.length; i++){
+                  //console.log(tasks[i]);
+                  if (typeof tasks[i].due == "undefined"){
+                    tasks[i].due = "0";
+                  }
+                }
+
+                tasks.sort(function(a, b) {
+                    if (a.due > b.due) {
+                      return 1;
+                    }
+                    if (a.due < b.due){
+                      return -1;
+                    }
+                    return 0;
+                });
+
+
+                var previousDate = "";
+       
+
+                for (var i = 0; i < tasks.length; i++) {
+                    dateHTML = "";
+                    task = tasks[i];
+                    var notes = '';
+            
+                if (task.due != "0") {
+                    var year = task.due.substring(0,4);
+                    var month = task.due.substring(5,7);
+                    var day = task.due.substring(8,10);
+                    date = month + "/" + day + "/" + year;
+
+                }
+                else {
+                    date = "No Date Given"
+                }
+
+                    if (previousDate != date) {
+                      if (i == 0) {
+                         dateHTML = "<div class='dateContainer'><div class='date'><b>" + date + "</b></div>";
+                      }
+                      else {
+                         dateHTML = "</div><div class='dateContainer'><div class='date'><b>" + date + "</b></div>";
+                      }
+                    }
+
+                    if(typeof task.notes !== "undefined") {
+                        notes = "<div class='notes'>NOTES: " + task.notes + "</div>";
+                    }
+
+                    html += dateHTML + "<div class='task'><div class='taskTitle'>" + task.title + "</div>" + notes + /*<button onclick='markTaskComplete(task)'>Completed?</button>*/"</div>";
+
+                    previousDate = date;
+                }
+
+                tasksDiv.innerHTML += html + "</div>"; //end dateContainer (final date)
+            }
+
+          });
+      }
+
+      /*function markTaskComplete(task) {
+          gapi.client.request({
+              path: 'https://www.googleapis.com/tasks/v1/lists/' + tasklistId + '/tasks/' + task.id,
+              method: 'PUT',
+              body: Object.assign(
+                  {},
+                  task.originalTask,
+                  {
+                      completed: new Date().toISOString(),
+                      status: 'completed'
+                  }
+              )
+          }).execute();
+      }*/
+
+      /**
+       * Append a pre element to the body containing the given message
+       * as its text node.
+       *
+       * @param {string} message Text to be placed in pre element.
+       */
+      function appendPre(message) {
+        var pre = document.getElementById('output');
+        var textContent = document.createTextNode(message + '\n');
+        pre.appendChild(textContent);
+      }
+
+    </script>
+    <script src="https://apis.google.com/js/client.js?onload=checkAuth">
+    </script>
+  </head>
+  <body>
+    <div id="authorize-div" style="display: none">
+      <span>Authorize access to Google Tasks API</span>
+      <!--Button for the user to click to initiate auth sequence -->
+      <button id="authorize-button" onclick="handleAuthClick(event)">
+        Authorize
+      </button>
+    </div>
+    <pre id="output"></pre>
+    <div id="tasks"></div><!--JH ADDED-->
+
+
+  </body>
+</html>
