@@ -55,6 +55,9 @@
       var taskLists = {};
       var tasks = {};
 
+      //html holder for tasklists
+      var htmlTasklists = "";
+
       /**
        * Load Google Tasks API client library.
        */
@@ -66,25 +69,33 @@
        * Print task lists.
        */
       function listTaskLists() {
+        var taskListsDiv = document.getElementById('taskListsId');
         var request = gapi.client.tasks.tasklists.list({
             'maxResults': 10
           });
 
           request.execute(function(resp) {
-            appendPre('Task Lists:');
+            //appendPre('Task Lists:');
             taskLists = resp.items;
             if (taskLists && taskLists.length > 0) {
               for (var i = 0; i < taskLists.length; i++) {
              
-                var taskList = taskLists[i];
-                appendPre(taskList.title + ' (' + taskList.id + ')');
+                taskList = taskLists[i];
+
+                htmlTasklists += "<div class='taskListTitle'>" + taskList.title + "</div>";
+
               }
             } else {
-              appendPre('No task lists found.');
+                htmlTasklists += "<div class='taskListTitle'>No task lists found</div>";
             };
-  
-             getTasksByListId();
+
+            console.log(taskListsDiv);
+            console.log(htmlTasklists);
+
+            taskListsDiv.innerHTML = htmlTasklists;
+            //getTasksByListId();
           });
+
       }
 
       /*!!!!!!!NEED TO FIND A WAY TO HANDLE TASKS W/O A DATE!!!!*/
@@ -98,6 +109,8 @@
       //MTYxMjQ4MzEwMzA0OTIwNzY1Nzk6MjQ0MTczNDE5OjA -- My Tasks
       var task;
       var date;
+
+      //html holder for task info
       var html ="";
       
       function getTasksByListId() {
@@ -197,11 +210,11 @@
        *
        * @param {string} message Text to be placed in pre element.
        */
-      function appendPre(message) {
+      /*function appendPre(message) {
         var pre = document.getElementById('output');
         var textContent = document.createTextNode(message + '\n');
         pre.appendChild(textContent);
-      }
+      }*/
 
     </script>
     <script src="https://apis.google.com/js/client.js?onload=checkAuth">
@@ -215,9 +228,13 @@
         Authorize
       </button>
     </div>
-    <pre id="output"></pre>
-    <div id="tasks"></div><!--JH ADDED-->
+    <div id="select">Select which Google tasklist to display:</div>
+    <div id="taskListsId"></div>
+    <div id="tasks"></div>
 
+
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/index.js"></script>
 
   </body>
 </html>

@@ -1,3 +1,23 @@
+#select {
+	font-size: 20px;
+	padding-bottom: 20px;
+}
+
+.taskListTitle {
+	background-color: #63C29C;
+	color: #666666;
+	width: 50%;
+	padding: 10px;
+	margin: 5px;
+	border-radius: 5px;
+}
+
+.taskListTitle:hover, 
+.taskListTitle:active {
+	background-color: #683273;
+	color: #f7f8f8;
+}
+
 .dateContainer {
 	border: 1px black solid;
 	border-radius: 8px;
