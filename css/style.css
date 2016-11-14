@@ -19,9 +19,12 @@
 }
 
 .dateContainer {
-	border: 1px black solid;
-	border-radius: 8px;
-	margin-top: 20px;
+	margin-top: 10px;
+	width: 80%;
+	border: 1px solid gray;
+	border-radius: 8px;*/
+	padding-bottom: 10px;
+	background-color: #D3D3D3;
 }
 
 .date {
@@ -35,8 +38,13 @@
 }
 
 .task {
-	background-color: gray;
-	margin: 5px;
+	margin: 15px;
+	color: #666666;
+	border: 1px solid gray;
+	padding: 5px;
+	border-radius: 8px;
+	background-color: #63C29C;
+	
 }
 
 .taskTitle:before {
@@ -44,7 +52,12 @@
 }
 
 .notes {
+	margin-top: 5px;
+	margin-left: 20px;
+	margin-right: 20px;
+	border-radius: 8px;
 	padding-left: 20px;
-	background-color: white;
+	background-color: #D3D3D3;
 	font-style: italic;
+	color: #666666;
 }
