@@ -1,6 +1,21 @@
-#select {
+/*ensures/forces line breaks for long URLs*/
+a {
+	word-wrap: break-word;
+}
+
+#selectTasklist {
 	font-size: 20px;
+	font-weight: 600;
+	padding-top: 10px;
 	padding-bottom: 20px;
+}
+
+
+/*task list titles*/
+.taskListTitle:hover, 
+.taskListTitle:active {
+	background-color: #683273;
+	color: #f7f8f8;
 }
 
 .taskListTitle {
@@ -8,14 +23,13 @@
 	color: #666666;
 	width: 50%;
 	padding: 10px;
-	margin: 5px;
+	margin: 10px;
 	border-radius: 5px;
+	display: inline;
 }
 
-.taskListTitle:hover, 
-.taskListTitle:active {
-	background-color: #683273;
-	color: #f7f8f8;
+#tasks{
+	margin-top: 20px;
 }
 
 .dateContainer {
@@ -37,6 +51,11 @@
 	padding-left: 10px;
 }
 
+
+.taskTitle:before {
+	content:"* ";
+}
+
 .task {
 	margin: 15px;
 	color: #666666;
@@ -47,9 +66,6 @@
 	
 }
 
-.taskTitle:before {
-	content:"* ";
-}
 
 .notes {
 	margin-top: 5px;
