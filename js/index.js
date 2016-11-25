@@ -34,55 +34,68 @@ $(document).on('click', '.taskListTitle', function(){
 	}	
 });
 
-/*function toggleNotesBtn() {
-	if($('#notesBtn').text() == 'Hide'){
-		$('.notes').hide();
-		$('#notesBtn').text('Show');
 
+/*reusable function that takes an element to either show or hide, and then adds/remove a class to make the button active css*/
+function activate(viewElement, show, removeClassElement, addClassElement){
+	if(show){
+		viewElement.show();
 	}
 	else {
-		$('.notes').show();
-		$('#notesBtn').text('Hide');
+		viewElement.hide();
 	}
-}*/
+
+	removeClassElement.removeClass('btnActive');
+	addClassElement.addClass('btnActive');
+
+}
 
 function showNotes() {
-	$('.notes').show();
-
-	$('#hideNotes').removeClass('btnActive');
-	$('#showNotes').addClass('btnActive');
+	activate($('.notes'), true, $('#hideNotes'), $('#showNotes'));
 }
 
 function hideNotes() {
-	$('#showNotes').removeClass('btnActive');
-	$('#hideNotes').addClass('btnActive');
-
-	$('.notes').hide();
+	activate($('.notes'), false, $('#showNotes'), $('#hideNotes'));
 }
 
 function showNoDate() {
-	$('#hideNoDate').removeClass('btnActive');
-	$('#showNoDate').addClass('btnActive');
-
-	$('#0-0-0').show();
+	activate($('#0-0-0'), true, $('#hideNoDate'), $('#showNoDate'));
 }
 
 function hideNoDate() {
-	$('#showNoDate').removeClass('btnActive');
-	$('#hideNoDate').addClass('btnActive');
-
-	$('#0-0-0').hide();
+	activate($('#0-0-0'), false, $('#showNoDate'), $('#hideNoDate'));
 }
 
 
 var currentDate = new Date();
+/*console.log(currentDate);
+currentDate = new Date("2016-12-13");
+console.log(currentDate);*/
+
 var currentMonth = currentDate.getMonth() + 1;
 var currentDay = currentDate.getDate();
 var currentYear = currentDate.getFullYear();
 var stringCurrentDate = currentYear + "-" + currentMonth + "-" + currentDay;
 
+
+
 function showWeek() {
-	$('.dateContainer').not("[id*='" + currentYear + "-" + currentMonth + "']").hide();
+	showAll();
+	hideNoDate();
+
+	//sets a date for 1 week from currentDate (now)
+	var dateInOneWeek = new Date();
+	dateInOneWeek.setDate(currentDate.getDate() + 6);
+	//dateInOneWeek = new Date("2016-12-5");
+	//currentDate = new Date("2016-11-29");
+
+	/*loops through each dateContainer item. if its id is not between the current date and the
+	date in 1 week, then the element is hidden*/
+	$('.dateContainer').each(function(){
+		var dateElement = new Date(this.id.split("-"));
+		if (dateElement >= dateInOneWeek || dateElement < currentDate) {
+			$(this).hide();
+		}
+	});
 
 	$('#message').html('');
 	/*if no tasks for this week, display message*/
@@ -92,24 +105,51 @@ function showWeek() {
 
 	$('.showTasks').removeClass('btnActive');
 	$('#showWeek').addClass('btnActive');
-
-	hideNoDate();
 }
 
-function showMonth() {
-	$('.dateContainer').not("[id*='" + currentYear + "-" + currentMonth + "']").hide();
+function showMonth(compareMonth, compareYear) {
+	$('.dateContainer').not("[id*='" + compareYear + "-" + compareMonth + "']").hide();
 	//$(".dateContainer[id^='" + currentYear + "-" + currentMonth + "']").hide();
 
 	$('#message').html('');
 	if($('.dateContainer:visible').length == 0) {
-		$('#message').html('No tasks due this month.');
+		$('#message').html('No tasks due.');
 	}
 
 	$('.showTasks').removeClass('btnActive');
-	$('#showMonth').addClass('btnActive');
 
 	hideNoDate();
 }
+
+function showCurrentMonth() {
+	showAll();
+	//sets to current month
+
+	var compareMonth = currentDate.getMonth() + 1;
+	var compareYear = currentDate.getFullYear();
+
+	showMonth(compareMonth, compareYear);
+
+	$('#showCurrentMonth').addClass('btnActive');
+}
+
+function showNextMonth() {
+	showAll();
+	//sets to next month
+	if ((currentDate.getMonth() + 1) == 12){
+		var compareYear = currentDate.getFullYear() + 1;
+		var compareMonth = "01";
+	}
+	else {
+		var compareYear = currentDate.getFullYear();
+		var compareMonth = currentDate.getMonth() + 2;
+	}
+
+	showMonth(compareMonth, compareYear);
+
+	$('#showNextMonth').addClass('btnActive');
+}
+
 
 function showAll() {
 	$('.dateContainer').show();
