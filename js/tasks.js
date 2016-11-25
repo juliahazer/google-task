@@ -45,7 +45,7 @@ function listTaskLists() {
     if (taskLists && taskLists.length > 0) {
       for (var i = 0; i < taskLists.length; i++) {
         taskList = taskLists[i];
-        htmlTasklists += "<div class='taskListTitle listInactive' status='0' position='" + i + "' id='" + taskList.id + "'>" + taskList.title + "</div>";
+        htmlTasklists += "<div class='taskListTitle listInactive' onClick='' status='0' position='" + i + "' id='" + taskList.id + "'>" + taskList.title + "</div>";
 
       }
     /*else, display message for no tasklist...*/

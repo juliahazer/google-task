@@ -8,6 +8,7 @@
 */
 
 $(document).on('click', '.taskListTitle', function(){
+
 	if ($(this).attr('status') == 0){
 		var position = $(this).attr('position'); 
 		getTasksByListId($(this).attr('id'), position);
@@ -31,7 +32,7 @@ $(document).on('click', '.taskListTitle', function(){
 		$('#toggleBtns').css('display', 'none');
 		$(this).removeClass('listActive');
 		$(this).addClass('listInactive');
-	}	
+	}
 });
 
 
