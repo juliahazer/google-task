@@ -10,22 +10,61 @@ a {
 	padding-bottom: 20px;
 }
 
+#toggleBtns {
+	margin-top: 20px;
+}
+
+#toggleNotes {
+	margin-bottom: 10px;
+}
+
+#toggleNoDate {
+	margin-bottom: 10px;
+}
 
 /*task list titles*/
 .taskListTitle:hover, 
-.taskListTitle:active {
+.taskListTitle:active,
+.listActive {
 	background-color: #683273;
 	color: #f7f8f8;
 }
 
-.taskListTitle {
+.listInactive {
 	background-color: #63C29C;
 	color: #666666;
+}
+
+.taskListTitle {
 	width: 50%;
 	padding: 10px;
 	margin: 10px;
 	border-radius: 5px;
 	display: inline;
+}
+
+#taskListTitle {
+	margin-top: 30px;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+button {
+	background-color: #63C29C;
+	color: #666666;
+}
+
+button:hover, 
+button:active,
+.btnActive {
+	background-color: #683273;
+	color: #f7f8f8;
+}
+
+#message {
+	margin-top: 20px;
+	font-size: 16px;
+	color: red;
 }
 
 #tasks{
@@ -65,7 +104,6 @@ a {
 	background-color: #63C29C;
 	
 }
-
 
 .notes {
 	margin-top: 5px;

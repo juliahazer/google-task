@@ -45,12 +45,12 @@ function listTaskLists() {
     if (taskLists && taskLists.length > 0) {
       for (var i = 0; i < taskLists.length; i++) {
         taskList = taskLists[i];
-        htmlTasklists += "<div class='taskListTitle' status='0' position='" + i + "' id='" + taskList.id + "'>" + taskList.title + "</div>";
+        htmlTasklists += "<div class='taskListTitle listInactive' status='0' position='" + i + "' id='" + taskList.id + "'>" + taskList.title + "</div>";
 
       }
     /*else, display message for no tasklist...*/
     } else {
-        htmlTasklists += "<div class='taskListTitle'>No task lists found</div>";
+        htmlTasklists += "<div class='taskListTitle listInactive'>No task lists found</div>";
     };
 
     /*display tasklist html w/in taskListsId div*/
@@ -58,19 +58,38 @@ function listTaskLists() {
   });//end request.execute
 }
 
+/*function to return day of the week name based on a date (year, month, day) provided*/
+function getDayName(dateId) {
+  var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  var date = new Date(dateId);
+  var dayName = days[date.getDay()];
+  return dayName;
+}
 
 /**
  * Print tasks w/in selected list. Called on click (see index.js)
   NOTE: added the id and position as parameters
  */
 function getTasksByListId(id, position) {
+
   //will hold tasks html
   var tasksDiv = document.getElementById('tasks');
+  tasksDiv.innerHTML = "";
+
+  //will hold the div with the buttons (show notes, how tasks, etc)
+  var toggleBtnsDiv = document.getElementById('toggleBtns');
+  //as default, sets the div with the buttons (show notes, show tasks, etc) to display none
+  toggleBtnsDiv.style.display = 'none';
 
   //call to Google API for task data
   var request = gapi.client.tasks.tasks.list({
       'tasklist': id
   })
+
+  /*clears all values*/
+  var notes = '';
+  var dateHTML = '';
+  htmlTask ="";
 
   /*request.execute start...*/
   request.execute(function(resp){
@@ -78,12 +97,14 @@ function getTasksByListId(id, position) {
 
     /*if no tasks exist in the list (task length is 1 and the task's title is empty), display message for "no tasks exist..."*/
     if ((tasks.length == 1) && (tasks[0].title == "")){
-      tasksDiv.innerHTML = "<div class='noTasks'>No tasks exist in the " + taskLists[position].title + " list.</div>";
+      $('#message').html('There are no tasks in this list.');
     }
     /*else...*/
     else {
 
-      tasksDiv.innerHTML = "";
+      /*resets in case have clicked on other tasklists, to hide notes and no date toggle buttons*/
+      $('#toggleNotes').hide();
+      $('#toggleNoDate').hide();
 
       /*cycle through tasks, and assign all tasks with no due date (undefined) a .due = "0" value*/
       for (var i = 0; i < tasks.length; i++){
@@ -114,9 +135,15 @@ function getTasksByListId(id, position) {
         task = tasks[i];
 
         //resets notes var to empty
-        var notes = '';
+        notes = '';
         //resets dateHTML to empty
         dateHTML = '';
+
+
+// Usage: Get the day name of a date
+//var whichDay = getDayName("2013-07-31");
+//console.log(whichDay);
+
 
         /*for those tasks with a due date, reformats the due date (mm/dd/year)*/
         if (task.due != "0") {
@@ -124,28 +151,54 @@ function getTasksByListId(id, position) {
           var month = task.due.substring(5,7);
           var day = task.due.substring(8,10);
           date = month + "/" + day + "/" + year;
-
         }
         /*else, for those w/o a due date, sets date to "no date given" message */
         else {
+          year = 0;
+          month = 0;
+          day = 0;
           date = "No Date Given";
+
+          //if there are notes, then display the button that allows users to show/hide notes
+          $('#toggleNoDate').css('display', 'block');
+          
+          showNoDate();
         }
 
         /*for each new date, begin wrapping the content that follows (sub-tasks/notes) in a .dateContainer div*/
         if (previousDate != date) {
           //the first item does not need a closing </div> at the beginning
-          if (i == 0) {
+          /*if (i == 0) {
             dateHTML = "<div class='dateContainer'><div class='date'><b>" + date + "</b></div>";
+          }*/
+
+          if (i > 0){
+            dateHTML += "</div>";
           }
+
+
           //all items after the 1st, need to close the previous dateContainer div first
-          else {
-            dateHTML = "</div><div class='dateContainer'><div class='date'><b>" + date + "</b></div>";
+   
+          //var dayName = getDayName(year, month, day);
+          
+          var dateId = year + "-" + month + "-" + day;
+          var dayName = "";
+          if (date != "No Date Given"){
+             dayName = ", " + getDayName(dateId);
           }
+          dateHTML += "<div class='dateContainer' id='" + dateId + "'><div class='date'><b>" + date + dayName + "</b></div>";
         }
 
         /*if the task has notes, add a .notes div containing those notes*/
         if (typeof task.notes !== "undefined") {
           notes = "<div class='notes'>NOTES: " + task.notes + "</div>";
+          
+          //if there are notes, then display the button that allows users to show/hide notes
+          $('#toggleNotes').css('display', 'block');
+          
+          showNotes();
+          /*since default is to display notes, then set text of button option to 'hide notes'
+          $('#notesBtn').text('Hide');*/
         }
 
         /*add onto htmlTask, everything that will be displayed for this task (if no date or notes, these are '')*/
@@ -157,26 +210,24 @@ function getTasksByListId(id, position) {
 
       }//end for loop
 
+      //display the div with the buttons (show notes, show tasks, etc)
+      toggleBtnsDiv.style.display = 'block';
+
+      
+      showAll();
+
+      /*sets default Show Tasks option to "All"
+      $('.showTasks').removeClass('btnActive');
+      $('#showAll').addClass('btnActive');*/
+
       //display everything w/in the tasks id div (+ the final/closing date container div)
       tasksDiv.innerHTML += htmlTask + "</div>"; //end dateContainer (final date)
-    }
+
+    }//end else
   });//end request.execute
 }
 
-function toggle_visibility(className) {
-  var buttonText = document.getElementById('toggleNotes').innerHTML;
-  
-  if (buttonText == "Show Notes") {
-     document.getElementById('toggleNotes').innerHTML = "Hide Notes";
-  }
-  else {
-     document.getElementById('toggleNotes').innerHTML = "Show Notes";
-  }
-  elements = document.getElementsByClassName(className);
-  for (var i = 0; i < elements.length; i++) {
-      elements[i].style.display = elements[i].style.display == 'none' ? 'block' : 'none';
-  } 
-}
+
 
 /*function markTaskComplete(task) {
     gapi.client.request({

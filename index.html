@@ -20,10 +20,29 @@
 
     <div id="logout"></div>
     <div id="selectTasklist"></div>
+
     <div id="taskListsId"></div>
-    
-    <button id="toggleNotes" onclick="toggle_visibility('notes')" style="display:none">Toggle Notes</button>
-    
+
+    <div id="taskListTitle"></div>
+
+    <div id="toggleBtns" style="display:none">
+           <div id="toggleNotes" style="display:none">Notes: 
+              <button id="showNotes" class="btnActive" onclick="showNotes()">Show</button>
+              <button id="hideNotes" onclick="hideNotes()">Hide</button>
+           </div>
+
+           <div id="toggleNoDate" style="display:none">Tasks with No Due Date: 
+              <button id="showNoDate" class="btnActive" onclick="showNoDate()">Show</button>
+              <button id="hideNoDate" onclick="hideNoDate()">Hide</button>
+           </div> 
+
+           Show Tasks:
+           <button id="showAll" class="showTasks btnActive" onclick="showAll()">All</button>
+           <button id="showWeek" class="showTasks" onclick="showWeek()">This Week</button>
+           <button id="showMonth" class="showTasks" onclick="showMonth()">This Month</button>
+    </div>
+
+    <div id="message"></div>
     <div id="tasks"></div>
 
     <script src="js/index.js"></script>
